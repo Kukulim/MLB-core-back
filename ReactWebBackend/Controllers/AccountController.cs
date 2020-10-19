@@ -26,6 +26,13 @@ namespace JwtAuthDemo.Controllers
             _userService = userService;
             _jwtAuthManager = jwtAuthManager;
         }
+        [AllowAnonymous]
+        [HttpGet("getall")]
+        public ActionResult getall()
+        {
+            var result = _userService.Get();
+            return Ok(result);
+        }
 
         [AllowAnonymous]
         [HttpPost("login")]

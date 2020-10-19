@@ -21,10 +21,13 @@ namespace ReactWebBackend.Services
             {
                 _logger = logger;
                 _mongoContext = context;
-                _dbCollection = _mongoContext.GetCollection<Users>("users");
-        }
+                _dbCollection = _mongoContext.GetCollection<Users>("Users");
+            }
 
-            public bool IsValidUserCredentials(string userName, string password)
+                public List<Users> Get() =>
+                _dbCollection.Find(user => true).ToList();
+
+        public bool IsValidUserCredentials(string userName, string password)
             {
                 _logger.LogInformation($"Validating user [{userName}]");
                 if (string.IsNullOrWhiteSpace(userName))

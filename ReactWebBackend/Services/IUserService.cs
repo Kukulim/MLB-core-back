@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ReactWebBackend.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -10,5 +11,6 @@ namespace ReactWebBackend.Services
         //bool IsAnExistingUser(string userName);
         bool IsValidUserCredentials(string userName, string password);
         string GetUserRole(string userName);
+        public List<Users> Get();
     }
 }

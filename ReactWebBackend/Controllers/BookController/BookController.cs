@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ReactWebBackend.Models;
 using ReactWebBackend.Services.BookRepository;
@@ -11,6 +12,7 @@ namespace ReactWebBackend.Controllers
 
         [Route("api/books")]
         [ApiController]
+        [Authorize]
         public class BookController : ControllerBase
         {
             private readonly IBookRepository bookRepository;
