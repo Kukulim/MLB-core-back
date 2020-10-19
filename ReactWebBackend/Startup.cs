@@ -10,6 +10,7 @@ using Microsoft.IdentityModel.Tokens;
 using ReactWebBackend.DbContext;
 using ReactWebBackend.JwtAuth;
 using ReactWebBackend.Services;
+using ReactWebBackend.Services.BookRepository;
 
 namespace ReactWebBackend
 {
@@ -48,6 +49,7 @@ namespace ReactWebBackend
             services.AddSingleton<IJwtAuthManager, JwtAuthManager>();
             services.AddHostedService<JwtRefreshTokenCache>();
             services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IBookRepository, BookRepository>();
 
             var jwtTokenConfig = Configuration.GetSection("jwtTokenConfig").Get<JwtTokenConfig>();
             services.AddSingleton(jwtTokenConfig);

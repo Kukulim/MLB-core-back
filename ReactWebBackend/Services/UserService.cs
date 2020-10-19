@@ -1,4 +1,8 @@
 ﻿using Microsoft.Extensions.Logging;
+using MongoDB.Bson;
+using MongoDB.Driver;
+using ReactWebBackend.DbContext;
+using ReactWebBackend.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,19 +13,16 @@ namespace ReactWebBackend.Services
         public class UserService : IUserService
         {
             private readonly ILogger<UserService> _logger;
+            private readonly IMongoBookDBContext _mongoContext;
+            protected IMongoCollection<Users> _dbCollection;
 
-
-            private readonly IDictionary<string, string> _users = new Dictionary<string, string>
-        {
-            { "test1", "password1" },
-            { "test2", "password2" },
-            { "admin", "securePassword" }
-        };
             // inject your database here for user validation
-            public UserService(ILogger<UserService> logger)
+            public UserService(ILogger<UserService> logger, IMongoBookDBContext context)
             {
                 _logger = logger;
-            }
+                _mongoContext = context;
+                _dbCollection = _mongoContext.GetCollection<Users>("users");
+        }
 
             public bool IsValidUserCredentials(string userName, string password)
             {
@@ -36,20 +37,27 @@ namespace ReactWebBackend.Services
                     return false;
                 }
 
-                return _users.TryGetValue(userName, out var p) && p == password;
+            var user = _dbCollection.Find<Users>(user => user.UserName == userName && user.Password== password).FirstOrDefault();
+
+            if (user != null)
+            {
+                return true;
             }
 
-            public bool IsAnExistingUser(string userName)
-            {
-                return _users.ContainsKey(userName);
+            return false;
             }
+
+            //public bool IsAnExistingUser(string userName)
+            //{
+            //    return true;
+            //}
 
             public string GetUserRole(string userName)
             {
-                if (!IsAnExistingUser(userName))
-                {
-                    return string.Empty;
-                }
+                //if (!IsAnExistingUser(userName))
+                //{
+                //    return string.Empty;
+                //}
 
                 if (userName == "admin")
                 {
