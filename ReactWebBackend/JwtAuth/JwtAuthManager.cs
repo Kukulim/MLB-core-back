@@ -115,7 +115,7 @@ namespace ReactWebBackend.JwtAuth
             return (principal, validatedToken as JwtSecurityToken);
         }
 
-        private static string GenerateRefreshTokenString()
+        private string GenerateRefreshTokenString()
         {
             var randomNumber = new byte[32];
             using var randomNumberGenerator = RandomNumberGenerator.Create();

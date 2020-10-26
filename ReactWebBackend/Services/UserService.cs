@@ -16,7 +16,6 @@ namespace ReactWebBackend.Services
             private readonly IMongoBookDBContext _mongoContext;
             protected IMongoCollection<Users> _dbCollection;
 
-            // inject your database here for user validation
             public UserService(ILogger<UserService> logger, IMongoBookDBContext context)
             {
                 _logger = logger;

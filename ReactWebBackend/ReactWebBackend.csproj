@@ -10,9 +10,5 @@
     <PackageReference Include="ServiceStack" Version="5.9.2" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Controllers\AccountController\" />
-  </ItemGroup>
-
 
 </Project>
