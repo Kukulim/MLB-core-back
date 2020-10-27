@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using ReactWebBackend.JwtAuth;
+using ReactWebBackend.Models;
 using ReactWebBackend.Services;
 
 namespace JwtAuthDemo.Controllers
@@ -30,8 +31,20 @@ namespace JwtAuthDemo.Controllers
         [HttpGet("getall")]
         public ActionResult getall()
         {
-            var result = _userService.Get();
+            var result = _userService.GetAll();
             return Ok(result);
+        }
+        [AllowAnonymous]
+        [HttpPost("register")]
+        public ActionResult Register([FromBody] LoginRequest request)
+        {
+            var newUser = new Users
+            {
+                UserName = request.UserName,
+                Password = request.Password
+            };
+            var result = _userService.Create(newUser);
+            return Ok(newUser);
         }
 
         [AllowAnonymous]

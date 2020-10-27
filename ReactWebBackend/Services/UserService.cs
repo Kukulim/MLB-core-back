@@ -23,8 +23,10 @@ namespace ReactWebBackend.Services
                 _dbCollection = _mongoContext.GetCollection<Users>("Users");
             }
 
-                public List<Users> Get() =>
+        public List<Users> GetAll() =>
                 _dbCollection.Find(user => true).ToList();
+
+
 
         public bool IsValidUserCredentials(string userName, string password)
             {
@@ -68,6 +70,12 @@ namespace ReactWebBackend.Services
 
                 return UserRoles.BasicUser;
             }
+
+        public Users Create(Users user)
+        {
+            _dbCollection.InsertOne(user);
+            return user;
         }
+    }
     }
 

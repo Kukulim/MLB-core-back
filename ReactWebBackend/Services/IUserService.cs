@@ -11,6 +11,7 @@ namespace ReactWebBackend.Services
         //bool IsAnExistingUser(string userName);
         bool IsValidUserCredentials(string userName, string password);
         string GetUserRole(string userName);
-        public List<Users> Get();
+        public List<Users> GetAll();
+        public Users Create(Users user);
     }
 }
