@@ -20,5 +20,7 @@ namespace ReactWebBackend.Models
         public string UserName { get; set; }
         [JsonPropertyName("password")]
         public string Password { get; set; }
+        public List<Book> Books { get; set; }
+
     }
 }

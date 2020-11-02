@@ -23,9 +23,10 @@ namespace ReactWebBackend.Controllers
             }
 
             [HttpGet]
-            public async Task<ActionResult<IEnumerable<Book>>> GetAll()
+            public ActionResult<IEnumerable<Book>> GetAll()
             {
-                var all = await bookRepository.GetAll();
+            var UserName = User.Identity.Name;
+                var all = bookRepository.GetAllbooks(UserName);
                 return Ok(all);
             }
             [HttpGet("{id}")]

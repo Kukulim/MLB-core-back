@@ -19,7 +19,7 @@ namespace ReactWebBackend.Services.BaseRepository
             _mongoContext = context;
             _dbCollection = _mongoContext.GetCollection<TEntity>(typeof(TEntity).Name);
         }
-        public async Task Create(TEntity obj)
+        public virtual async Task Create(TEntity obj)
         {
             if (obj == null)
             {
@@ -57,7 +57,7 @@ namespace ReactWebBackend.Services.BaseRepository
         }
 
 
-        public async Task<IEnumerable<TEntity>> GetAll()
+        public virtual async Task<IEnumerable<TEntity>> GetAll()
         {
             var all = await _dbCollection.FindAsync(Builders<TEntity>.Filter.Empty);
             return await all.ToListAsync();

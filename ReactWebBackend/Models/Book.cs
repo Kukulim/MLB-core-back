@@ -1,5 +1,6 @@
 ﻿using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
+using ServiceStack.DataAnnotations;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,5 +21,7 @@ namespace ReactWebBackend.Models
         public string Category { get; set; }
 
         public string Author { get; set; }
+
+        public string UserId { get; set; }
     }
 }
