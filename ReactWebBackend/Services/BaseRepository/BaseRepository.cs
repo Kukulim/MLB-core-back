@@ -60,7 +60,7 @@ namespace ReactWebBackend.Services.BaseRepository
         public virtual async Task<IEnumerable<TEntity>> GetAll(string userId)
         {
 
-            FilterDefinition<TEntity> filter = Builders<TEntity>.Filter.Eq("userId", userId);
+            FilterDefinition<TEntity> filter = Builders<TEntity>.Filter.Eq("UserId", userId);
 
             _dbCollection = _mongoContext.GetCollection<TEntity>(typeof(TEntity).Name);
             return await _dbCollection.FindAsync(filter).Result.ToListAsync();
