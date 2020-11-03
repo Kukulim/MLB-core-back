@@ -14,11 +14,5 @@ namespace ReactWebBackend.Services.BookRepository
         public BookRepository(IMongoBookDBContext context) : base(context)
         {
         }
-        public IEnumerable<Book> GetAllbooks(string userId)
-        {
-            _dbCollection = _mongoContext.GetCollection<Book>(typeof(Book).Name);
-            var all = _dbCollection.Find(b => b.UserId == userId).ToList();
-            return all;
-        }
     }
 }

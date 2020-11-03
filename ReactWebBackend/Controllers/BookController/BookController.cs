@@ -27,7 +27,7 @@ namespace ReactWebBackend.Controllers
             public ActionResult<IEnumerable<Book>> GetAll()
             {
             var userId = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var all = bookRepository.GetAllbooks(userId);
+            var all = bookRepository.GetAll(userId);
                 return Ok(all);
             }
             [HttpGet("{id}")]

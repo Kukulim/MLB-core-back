@@ -9,6 +9,5 @@ namespace ReactWebBackend.Services.BookRepository
 {
     public interface IBookRepository : IBaseRepository<Book>
     {
-        IEnumerable<Book> GetAllbooks(string userId);
     }
 }
