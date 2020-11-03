@@ -62,9 +62,11 @@ namespace JwtAuthDemo.Controllers
             }
 
             var role = _userService.GetUserRole(request.UserName);
+            string userId = _userService.GetUserId(request.UserName,request.Password);
             var claims = new[]
             {
                 new Claim(ClaimTypes.Name,request.UserName),
+                new Claim(ClaimTypes.NameIdentifier, userId),
                 new Claim(ClaimTypes.Role, role)
             };
 

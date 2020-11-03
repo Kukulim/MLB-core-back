@@ -76,6 +76,11 @@ namespace ReactWebBackend.Services
             _dbCollection.InsertOne(user);
             return user;
         }
+
+        public string GetUserId(string userName, string userPassword)
+        {
+            return _dbCollection.Find<Users>(user => user.UserName == userName && user.Password == userPassword).FirstOrDefault().Id;         
+        }
     }
     }
 

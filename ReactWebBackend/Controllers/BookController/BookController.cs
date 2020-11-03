@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -12,7 +13,7 @@ namespace ReactWebBackend.Controllers
 
         [Route("api/books")]
         [ApiController]
-        [Authorize]
+        //[Authorize]
         public class BookController : ControllerBase
         {
             private readonly IBookRepository bookRepository;
@@ -25,8 +26,8 @@ namespace ReactWebBackend.Controllers
             [HttpGet]
             public ActionResult<IEnumerable<Book>> GetAll()
             {
-            var UserName = User.Identity.Name;
-                var all = bookRepository.GetAllbooks(UserName);
+            var userId = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var all = bookRepository.GetAllbooks(userId);
                 return Ok(all);
             }
             [HttpGet("{id}")]
