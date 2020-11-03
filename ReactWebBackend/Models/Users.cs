@@ -20,6 +20,10 @@ namespace ReactWebBackend.Models
         public string UserName { get; set; }
         [JsonPropertyName("password")]
         public string Password { get; set; }
+        [JsonPropertyName("email")]
+        public string Email { get; set; }
+
+        public bool IsEmailConfirmed { get; set; } = false;
         public List<Book> Books { get; set; }
 
     }

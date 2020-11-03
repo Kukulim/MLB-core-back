@@ -8,6 +8,9 @@ namespace JwtAuthDemo.Controllers
         [Required]
         [JsonPropertyName("username")]
         public string UserName { get; set; }
+        [Required]
+        [JsonPropertyName("email")]
+        public string Email { get; set; }
 
         [Required]
         [JsonPropertyName("password")]

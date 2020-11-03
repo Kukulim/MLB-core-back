@@ -39,7 +39,7 @@ namespace ReactWebBackend.Services.BaseRepository
         }
         public virtual void Update(TEntity obj)
         {
-            _dbCollection.ReplaceOneAsync(Builders<TEntity>.Filter.Eq(" _id ", obj.GetId()), obj);
+            _dbCollection.ReplaceOneAsync(Builders<TEntity>.Filter.Eq("_id ", obj.GetId()), obj);
         }
 
         public async Task<TEntity> Get(string id)

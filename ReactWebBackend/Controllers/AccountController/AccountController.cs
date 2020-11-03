@@ -41,7 +41,8 @@ namespace JwtAuthDemo.Controllers
             var newUser = new Users
             {
                 UserName = request.UserName,
-                Password = request.Password
+                Password = request.Password,
+                Email = request.Email
             };
             var result = _userService.Create(newUser);
             return Ok(newUser);
@@ -63,11 +64,13 @@ namespace JwtAuthDemo.Controllers
 
             var role = _userService.GetUserRole(request.UserName);
             string userId = _userService.GetUserId(request.UserName,request.Password);
+            string userEmail = _userService.GetUserEmail(request.UserName, request.Password);
             var claims = new[]
             {
                 new Claim(ClaimTypes.Name,request.UserName),
                 new Claim(ClaimTypes.NameIdentifier, userId),
-                new Claim(ClaimTypes.Role, role)
+                new Claim(ClaimTypes.Role, role),
+                new Claim(ClaimTypes.Email, userEmail)
             };
 
             var jwtResult = _jwtAuthManager.GenerateTokens(request.UserName, claims, DateTime.Now);

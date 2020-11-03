@@ -81,6 +81,11 @@ namespace ReactWebBackend.Services
         {
             return _dbCollection.Find<Users>(user => user.UserName == userName && user.Password == userPassword).FirstOrDefault().Id;         
         }
+
+        public string GetUserEmail(string userName, string password)
+        {
+            return _dbCollection.Find<Users>(user => user.UserName == userName && user.Password == password).FirstOrDefault().Email;
+        }
     }
     }
 

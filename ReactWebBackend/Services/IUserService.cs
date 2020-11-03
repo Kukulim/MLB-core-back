@@ -14,5 +14,6 @@ namespace ReactWebBackend.Services
         public List<Users> GetAll();
         public Users Create(Users user);
         string GetUserId(string userName, string userPassword);
+        string GetUserEmail(string userName, string password);
     }
 }
