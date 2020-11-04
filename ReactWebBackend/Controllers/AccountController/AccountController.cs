@@ -6,9 +6,11 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
+using ReactWebBackend.Controllers;
 using ReactWebBackend.JwtAuth;
 using ReactWebBackend.Models;
 using ReactWebBackend.Services;
+using ReactWebBackend.Services.EmailService;
 
 namespace JwtAuthDemo.Controllers
 {
@@ -20,12 +22,14 @@ namespace JwtAuthDemo.Controllers
         private readonly ILogger<AccountController> _logger;
         private readonly IUserService _userService;
         private readonly IJwtAuthManager _jwtAuthManager;
+        private readonly IEmailService _emailSender;
 
-        public AccountController(ILogger<AccountController> logger, IUserService userService, IJwtAuthManager jwtAuthManager)
+        public AccountController(ILogger<AccountController> logger, IUserService userService, IJwtAuthManager jwtAuthManager, IEmailService emailSender)
         {
             _logger = logger;
             _userService = userService;
             _jwtAuthManager = jwtAuthManager;
+            _emailSender = emailSender;
         }
         [AllowAnonymous]
         [HttpGet("getall")]
@@ -36,7 +40,7 @@ namespace JwtAuthDemo.Controllers
         }
         [AllowAnonymous]
         [HttpPost("register")]
-        public ActionResult Register([FromBody] LoginRequest request)
+        public ActionResult Register([FromBody] RegisterRequest request)
         {
             var newUser = new Users
             {
@@ -50,7 +54,7 @@ namespace JwtAuthDemo.Controllers
 
         [AllowAnonymous]
         [HttpPost("login")]
-        public ActionResult Login([FromBody] LoginRequest request)
+        public async Task<ActionResult> Login([FromBody] LoginRequest request)
         {
             if (!ModelState.IsValid)
             {
@@ -72,6 +76,8 @@ namespace JwtAuthDemo.Controllers
                 new Claim(ClaimTypes.Role, role),
                 new Claim(ClaimTypes.Email, userEmail)
             };
+
+            await _emailSender.SendEmailAsync(userEmail, "temat", "body");
 
             var jwtResult = _jwtAuthManager.GenerateTokens(request.UserName, claims, DateTime.Now);
             _logger.LogInformation($"User [{request.UserName}] logged in the system.");

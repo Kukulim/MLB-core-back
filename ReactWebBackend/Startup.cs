@@ -59,7 +59,7 @@ namespace ReactWebBackend
             services.AddHostedService<JwtRefreshTokenCache>();
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IBookRepository, BookRepository>();
-            services.AddScoped<IEmailService, MailgunEmailService>();
+            //services.AddScoped<IEmailService, MailgunEmailService>();
 
             var jwtTokenConfig = Configuration.GetSection("jwtTokenConfig").Get<JwtTokenConfig>();
             services.AddSingleton(jwtTokenConfig);
@@ -86,8 +86,8 @@ namespace ReactWebBackend
 
             services.AddHttpClient<IEmailService, MailgunEmailService>(cfg =>
             {
-                cfg.BaseAddress = new Uri("https://api.mailgun.net");
-                cfg.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic",
+                cfg.BaseAddress = new Uri("https://api.mailgun.net/");
+                cfg.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", 
                     Convert.ToBase64String(Encoding.UTF8.GetBytes($"api:{mailConfigSection.MailgunKey}")));
             });
 
