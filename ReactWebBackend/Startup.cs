@@ -1,4 +1,5 @@
 using System;
+using System.Net.Http.Headers;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -11,6 +12,7 @@ using ReactWebBackend.DbContext;
 using ReactWebBackend.JwtAuth;
 using ReactWebBackend.Services;
 using ReactWebBackend.Services.BookRepository;
+using ReactWebBackend.Services.EmailService;
 
 namespace ReactWebBackend
 {
@@ -30,8 +32,8 @@ namespace ReactWebBackend
 
             services.AddControllersWithViews();
             services.AddControllers().AddNewtonsoftJson(options =>
-    options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
-);
+                options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
+
             services.AddCors(options =>
             {
                 options.AddPolicy(name: MyAllowSpecificOrigins,
@@ -48,11 +50,16 @@ namespace ReactWebBackend
                 opt.Connection = Configuration.GetSection("MongoSettings:Connection").Value;
                 opt.DatabaseName = Configuration.GetSection("MongoSettings:DatabaseName").Value;
             });
+
+            MailConfigSection mailConfigSection = Configuration.GetSection("mailConfigSection").Get<MailConfigSection>();
+            services.AddSingleton(mailConfigSection);
+
             services.AddSingleton<IMongoBookDBContext, MongoBookDBContext>();
             services.AddSingleton<IJwtAuthManager, JwtAuthManager>();
             services.AddHostedService<JwtRefreshTokenCache>();
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IBookRepository, BookRepository>();
+            services.AddScoped<IEmailService, MailgunEmailService>();
 
             var jwtTokenConfig = Configuration.GetSection("jwtTokenConfig").Get<JwtTokenConfig>();
             services.AddSingleton(jwtTokenConfig);
@@ -76,6 +83,14 @@ namespace ReactWebBackend
                     ClockSkew = TimeSpan.FromMinutes(1)
                 };
             });
+
+            services.AddHttpClient<IEmailService, MailgunEmailService>(cfg =>
+            {
+                cfg.BaseAddress = new Uri("https://api.mailgun.net");
+                cfg.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic",
+                    Convert.ToBase64String(Encoding.UTF8.GetBytes($"api:{mailConfigSection.MailgunKey}")));
+            });
+
             services.AddCors(options =>
             {
                 options.AddPolicy("AllowAll",
