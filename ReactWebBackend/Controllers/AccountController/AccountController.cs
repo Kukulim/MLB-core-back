@@ -77,7 +77,7 @@ namespace JwtAuthDemo.Controllers
                 new Claim(ClaimTypes.Email, userEmail)
             };
 
-            await _emailSender.SendEmailAsync(userEmail, "temat", "body");
+            //await _emailSender.SendEmailAsync(userEmail, "temat", "body");
 
             var jwtResult = _jwtAuthManager.GenerateTokens(request.UserName, claims, DateTime.Now);
             _logger.LogInformation($"User [{request.UserName}] logged in the system.");

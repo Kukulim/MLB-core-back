@@ -11,7 +11,6 @@ namespace ReactWebBackend.Controllers
     public class RegisterRequest :LoginRequest
     {
         [Required]
-        [JsonPropertyName("email")]
         public string Email { get; set; }
     }
 }
