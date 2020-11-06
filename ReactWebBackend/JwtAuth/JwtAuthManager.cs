@@ -122,6 +122,11 @@ namespace ReactWebBackend.JwtAuth
             randomNumberGenerator.GetBytes(randomNumber);
             return Convert.ToBase64String(randomNumber);
         }
+
+        public string GenerateConfirmEmailToken(string username, Claim[] claims, DateTime now)
+        {
+            return "4534534666563636346token";
+        }
     }
 
 }

@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using ReactWebBackend.Controllers;
@@ -23,13 +24,15 @@ namespace JwtAuthDemo.Controllers
         private readonly IUserService _userService;
         private readonly IJwtAuthManager _jwtAuthManager;
         private readonly IEmailService _emailSender;
+        private readonly IConfiguration _configuration;
 
-        public AccountController(ILogger<AccountController> logger, IUserService userService, IJwtAuthManager jwtAuthManager, IEmailService emailSender)
+        public AccountController(ILogger<AccountController> logger, IUserService userService, IJwtAuthManager jwtAuthManager, IEmailService emailSender, IConfiguration configuration)
         {
             _logger = logger;
             _userService = userService;
             _jwtAuthManager = jwtAuthManager;
             _emailSender = emailSender;
+            _configuration = configuration;
         }
         [AllowAnonymous]
         [HttpGet("getall")]
@@ -112,6 +115,23 @@ namespace JwtAuthDemo.Controllers
             var userName = User.Identity.Name;
             _jwtAuthManager.RemoveRefreshTokenByUserName(userName);
             _logger.LogInformation($"User [{userName}] logged out the system.");
+            return Ok();
+        }
+        [Authorize]
+        [HttpPost("sendConfirmEmail")]
+        public async Task<ActionResult> SendConfirmEmail([FromBody] ConfirmEmailRequest request)
+        {
+
+            var claims = new[]
+{
+                new Claim(ClaimTypes.Name,request.UserName),
+            };
+            var ConfirmToken = _jwtAuthManager.GenerateConfirmEmailToken(request.UserName, claims, DateTime.Now);
+
+            string Url = $"{_configuration["appUrl"]}/api/account/confirmemail?userid={request.UserName}&token={ConfirmToken}";
+
+            await _emailSender.SendEmailAsync(request.UserEmail, "Confirm Email - ReactApp", "<h1>Hello from React Web</h1>"+$"<p> please confirm email by <a href='{Url}'>Click here!</a></p>");
+
             return Ok();
         }
 

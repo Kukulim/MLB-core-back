@@ -16,5 +16,6 @@ namespace ReactWebBackend.JwtAuth
         void RemoveExpiredRefreshTokens(DateTime now);
         void RemoveRefreshTokenByUserName(string userName);
         (ClaimsPrincipal, JwtSecurityToken) DecodeJwtToken(string token);
+        string GenerateConfirmEmailToken(string username, Claim[] claims, DateTime now);
     }
 }
