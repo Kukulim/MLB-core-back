@@ -76,16 +76,20 @@ namespace ReactWebBackend.Services
             _dbCollection.InsertOne(user);
             return user;
         }
-
-        public string GetUserId(string userName, string userPassword)
+        public Users GetUserByEmail(string userName, string userEmail)
         {
-            return _dbCollection.Find<Users>(user => user.UserName == userName && user.Password == userPassword).FirstOrDefault().Id;         
+            return _dbCollection.Find<Users>(user => user.UserName == userName && user.Email == userEmail).FirstOrDefault();
         }
-
-        public string GetUserEmail(string userName, string password)
+        public Users GetUserByPassword(string userName, string password)
         {
-            return _dbCollection.Find<Users>(user => user.UserName == userName && user.Password == password).FirstOrDefault().Email;
+            return _dbCollection.Find<Users>(user => user.UserName == userName && user.Password == password).FirstOrDefault();
+        }
+        public Users Edit(Users user)
+        {
+            var filter = Builders<Users>.Filter.Eq(doc => doc.Id, user.Id);
+            _dbCollection.FindOneAndReplace(filter, user);
+            return user;
         }
     }
-    }
+}
 

@@ -70,14 +70,13 @@ namespace JwtAuthDemo.Controllers
             }
 
             var role = _userService.GetUserRole(request.UserName);
-            string userId = _userService.GetUserId(request.UserName,request.Password);
-            string userEmail = _userService.GetUserEmail(request.UserName, request.Password);
+            var CurrentUser = _userService.GetUserByPassword(request.UserName,request.Password);
             var claims = new[]
             {
                 new Claim(ClaimTypes.Name,request.UserName),
-                new Claim(ClaimTypes.NameIdentifier, userId),
+                new Claim(ClaimTypes.NameIdentifier, CurrentUser.Id),
                 new Claim(ClaimTypes.Role, role),
-                new Claim(ClaimTypes.Email, userEmail)
+                new Claim(ClaimTypes.Email, CurrentUser.Email)
             };
 
             //await _emailSender.SendEmailAsync(userEmail, "temat", "body");
@@ -125,13 +124,28 @@ namespace JwtAuthDemo.Controllers
             var claims = new[]
 {
                 new Claim(ClaimTypes.Name,request.UserName),
+                new Claim(ClaimTypes.Email, request.UserEmail)
             };
             var ConfirmToken = _jwtAuthManager.GenerateConfirmEmailToken(request.UserName, claims, DateTime.Now);
 
-            string Url = $"{_configuration["appUrl"]}/api/account/confirmemail?userid={request.UserName}&token={ConfirmToken}";
+            string Url = $"{_configuration["appUrl"]}/api/account/confirmemail?UserName={request.UserName}&token={ConfirmToken}";
 
             await _emailSender.SendEmailAsync(request.UserEmail, "Confirm Email - ReactApp", "<h1>Hello from React Web</h1>"+$"<p> please confirm email by <a href='{Url}'>Click here!</a></p>");
 
+            return Ok();
+        }
+        [AllowAnonymous]
+        [HttpPost("ConfirmEmail")]
+        public async Task<ActionResult> ConfirmEmailToken(string UserName, string token)
+        {
+            var AcceptedEmail = _jwtAuthManager.ConfirmEmailToken(UserName, token, DateTime.Now);
+            if (AcceptedEmail == null)
+            {
+                return BadRequest();
+            }
+            var CurrentUser = _userService.GetUserByEmail(UserName, AcceptedEmail);
+            CurrentUser.IsEmailConfirmed = true;
+            _userService.Edit(CurrentUser);
             return Ok();
         }
 

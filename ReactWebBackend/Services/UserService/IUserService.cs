@@ -13,7 +13,8 @@ namespace ReactWebBackend.Services
         string GetUserRole(string userName);
         public List<Users> GetAll();
         public Users Create(Users user);
-        string GetUserId(string userName, string userPassword);
-        string GetUserEmail(string userName, string password);
+        Users GetUserByPassword(string userName, string userEmail);
+        Users GetUserByEmail(string userName, string password);
+        Users Edit(Users user);
     }
 }

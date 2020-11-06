@@ -7,6 +7,7 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 
 namespace ReactWebBackend.JwtAuth
@@ -125,7 +126,33 @@ namespace ReactWebBackend.JwtAuth
 
         public string GenerateConfirmEmailToken(string username, Claim[] claims, DateTime now)
         {
-            return "4534534666563636346token";
+            var shouldAddAudienceClaim = string.IsNullOrWhiteSpace(claims?.FirstOrDefault(x => x.Type == JwtRegisteredClaimNames.Aud)?.Value);
+            var jwtToken = new JwtSecurityToken(
+                _jwtTokenConfig.Issuer,
+                shouldAddAudienceClaim ? _jwtTokenConfig.Audience : string.Empty,
+                claims,
+                expires: now.AddMinutes(_jwtTokenConfig.AccessTokenExpiration),
+                signingCredentials: new SigningCredentials(new SymmetricSecurityKey(_secret), SecurityAlgorithms.HmacSha256Signature));
+            return new JwtSecurityTokenHandler().WriteToken(jwtToken);
+        }
+
+        public string ConfirmEmailToken(string UserName, string Token, DateTime Now)
+        {
+            var (principal, jwtToken) = DecodeJwtToken(Token);
+
+            var result = jwtToken.Claims.Where(c => c.Type == ClaimTypes.Email).FirstOrDefault().Value;
+                                                                            //FindFirst(ClaimTypes.Role)?.Value ?? string.Empty;
+            var CurrentUserName = principal.Identity.Name;
+
+            if (jwtToken == null || !jwtToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256Signature))
+            {
+                throw new SecurityTokenException("Invalid token");
+            }
+            if( CurrentUserName != UserName)
+            {
+                throw new SecurityTokenException("Invalid User");
+            }
+            return result;
         }
     }
 
