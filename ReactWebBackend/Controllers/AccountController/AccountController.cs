@@ -34,16 +34,10 @@ namespace JwtAuthDemo.Controllers
             _emailSender = emailSender;
             _configuration = configuration;
         }
-        [AllowAnonymous]
-        [HttpGet("getall")]
-        public ActionResult getall()
-        {
-            var result = _userService.GetAll();
-            return Ok(result);
-        }
+
         [AllowAnonymous]
         [HttpPost("register")]
-        public ActionResult Register([FromBody] RegisterRequest request)
+        public async Task<ActionResult> Register([FromBody] RegisterRequest request)
         {
             var newUser = new Users
             {
@@ -51,13 +45,17 @@ namespace JwtAuthDemo.Controllers
                 Password = request.Password,
                 Email = request.Email
             };
-            var result = _userService.Create(newUser);
+            _userService.Create(newUser);
+
+            var confirmEmail = new ConfirmEmailRequest { UserEmail = request.Email, UserName = request.UserName };
+            await SendConfirmEmail(confirmEmail);
+
             return Ok(newUser);
         }
 
         [AllowAnonymous]
         [HttpPost("login")]
-        public async Task<ActionResult> Login([FromBody] LoginRequest request)
+        public ActionResult Login([FromBody] LoginRequest request)
         {
             if (!ModelState.IsValid)
             {
@@ -116,6 +114,18 @@ namespace JwtAuthDemo.Controllers
             _logger.LogInformation($"User [{userName}] logged out the system.");
             return Ok();
         }
+        [HttpPost("remove")]
+        [Authorize]
+        public ActionResult Remove([FromBody] RemoveAccountRequest request)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+            var UserToRemove = new Users { UserName = request.UserName, Password = request.Password, Email = request.UserEmail };
+            _userService.Delete(UserToRemove);
+            return Ok();
+        }
         [Authorize]
         [HttpPost("sendConfirmEmail")]
         public async Task<ActionResult> SendConfirmEmail([FromBody] ConfirmEmailRequest request)
@@ -135,8 +145,8 @@ namespace JwtAuthDemo.Controllers
             return Ok();
         }
         [AllowAnonymous]
-        [HttpPost("ConfirmEmail")]
-        public async Task<ActionResult> ConfirmEmailToken(string UserName, string token)
+        [HttpGet("ConfirmEmail")]
+        public ActionResult ConfirmEmailToken(string UserName, string token)
         {
             var AcceptedEmail = _jwtAuthManager.ConfirmEmailToken(UserName, token, DateTime.Now);
             if (AcceptedEmail == null)

@@ -16,5 +16,6 @@ namespace ReactWebBackend.Services
         Users GetUserByPassword(string userName, string userEmail);
         Users GetUserByEmail(string userName, string password);
         Users Edit(Users user);
+        void Delete(Users user);
     }
 }

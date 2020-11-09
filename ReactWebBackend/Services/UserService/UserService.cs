@@ -90,6 +90,12 @@ namespace ReactWebBackend.Services
             _dbCollection.FindOneAndReplace(filter, user);
             return user;
         }
+        public void Delete(Users user)
+        {
+            var builder = Builders<Users>.Filter;
+            var filter = builder.Eq(x => x.Email, user.Email) & builder.Eq(x=>x.UserName, user.UserName) & builder.Eq(x => x.Password, user.Password);
+            _dbCollection.FindOneAndDelete(filter);
+        }
     }
 }
 
