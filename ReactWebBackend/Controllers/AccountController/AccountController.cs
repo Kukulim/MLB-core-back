@@ -86,7 +86,9 @@ namespace JwtAuthDemo.Controllers
                 UserName = request.UserName,
                 Role = role,
                 AccessToken = jwtResult.AccessToken,
-                RefreshToken = jwtResult.RefreshToken.TokenString
+                RefreshToken = jwtResult.RefreshToken.TokenString,
+                Email = CurrentUser.Email,
+                IsEmailConfirmed = CurrentUser.IsEmailConfirmed
             });
         }
 
