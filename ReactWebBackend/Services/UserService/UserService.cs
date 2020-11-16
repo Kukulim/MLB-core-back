@@ -51,12 +51,17 @@ namespace ReactWebBackend.Services
             return false;
             }
 
-            //public bool IsAnExistingUser(string userName)
-            //{
-            //    return true;
-            //}
+        public bool IsAnExistingUser(string userName, string UserEmail)
+        {
+            var user = _dbCollection.Find<Users>(user => user.UserName == userName || user.Email == UserEmail).FirstOrDefault();
+            if (user != null)
+            {
+                return true;
+            }
+            return false;
+        }
 
-            public string GetUserRole(string userName)
+        public string GetUserRole(string userName)
             {
                 //if (!IsAnExistingUser(userName))
                 //{

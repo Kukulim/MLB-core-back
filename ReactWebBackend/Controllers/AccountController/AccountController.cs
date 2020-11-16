@@ -1,7 +1,4 @@
-﻿using System;
-using System.Security.Claims;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authentication;
+﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -13,6 +10,9 @@ using ReactWebBackend.Models;
 using ReactWebBackend.Models.AccountModels;
 using ReactWebBackend.Services;
 using ReactWebBackend.Services.EmailService;
+using System;
+using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace JwtAuthDemo.Controllers
 {
@@ -40,18 +40,28 @@ namespace JwtAuthDemo.Controllers
         [HttpPost("register")]
         public async Task<ActionResult> Register([FromBody] RegisterRequest request)
         {
-            var newUser = new Users
+            if (!ModelState.IsValid)
             {
-                UserName = request.UserName,
-                Password = request.Password,
-                Email = request.Email
-            };
-            _userService.Create(newUser);
+                return BadRequest("Model state is not valid.");
+            }
 
-            var confirmEmail = new ConfirmEmailRequest { UserEmail = request.Email, UserName = request.UserName };
-            await SendConfirmEmail(confirmEmail);
+            if (!_userService.IsAnExistingUser(request.UserName, request.Email))
+            {
+                var newUser = new Users
+                {
+                    UserName = request.UserName,
+                    Password = request.Password,
+                    Email = request.Email
+                };
+                _userService.Create(newUser);
 
-            return Ok(newUser);
+                var confirmEmail = new ConfirmEmailRequest { UserEmail = request.Email, UserName = request.UserName };
+                await SendConfirmEmail(confirmEmail);
+
+                return Ok(newUser);
+            }
+
+            return BadRequest("Email or User name is in use.");
         }
 
         [AllowAnonymous]
@@ -69,7 +79,7 @@ namespace JwtAuthDemo.Controllers
             }
 
             var role = _userService.GetUserRole(request.UserName);
-            var CurrentUser = _userService.GetUserByPassword(request.UserName,request.Password);
+            var CurrentUser = _userService.GetUserByPassword(request.UserName, request.Password);
             var claims = new[]
             {
                 new Claim(ClaimTypes.Name,request.UserName),
@@ -77,8 +87,6 @@ namespace JwtAuthDemo.Controllers
                 new Claim(ClaimTypes.Role, role),
                 new Claim(ClaimTypes.Email, CurrentUser.Email)
             };
-
-            //await _emailSender.SendEmailAsync(userEmail, "temat", "body");
 
             var jwtResult = _jwtAuthManager.GenerateTokens(request.UserName, claims, DateTime.Now);
             _logger.LogInformation($"User [{request.UserName}] logged in the system.");
@@ -117,6 +125,7 @@ namespace JwtAuthDemo.Controllers
             _logger.LogInformation($"User [{userName}] logged out the system.");
             return Ok();
         }
+
         [HttpPost("remove")]
         [Authorize]
         public ActionResult Remove([FromBody] RemoveAccountRequest request)
@@ -129,11 +138,11 @@ namespace JwtAuthDemo.Controllers
             _userService.Delete(UserToRemove);
             return Ok();
         }
+
         [Authorize]
         [HttpPost("sendConfirmEmail")]
         public async Task<ActionResult> SendConfirmEmail([FromBody] ConfirmEmailRequest request)
         {
-
             var claims = new[]
             {
                 new Claim(ClaimTypes.Name,request.UserName),
@@ -143,10 +152,11 @@ namespace JwtAuthDemo.Controllers
 
             string Url = $"{_configuration["appUrl"]}/api/account/confirmemail?UserName={request.UserName}&token={ConfirmToken}";
 
-            await _emailSender.SendEmailAsync(request.UserEmail, "Confirm Email - ReactApp", "<h1>Hello from React Web</h1>"+$"<p> please confirm email by <a href='{Url}'>Click here!</a></p>");
+            await _emailSender.SendEmailAsync(request.UserEmail, "Confirm Email - ReactApp", "<h1>Hello from React Web</h1>" + $"<p> please confirm email by <a href='{Url}'>Click here!</a></p>");
 
             return Ok();
         }
+
         [AllowAnonymous]
         [HttpGet("ConfirmEmail")]
         public ActionResult ConfirmEmailToken(string UserName, string token)
@@ -178,6 +188,7 @@ namespace JwtAuthDemo.Controllers
 
             return Ok();
         }
+
         [AllowAnonymous]
         [HttpGet("PasswordReset")]
         public async Task<ActionResult> PasswordReset(string UserEmail, string token)
@@ -188,7 +199,7 @@ namespace JwtAuthDemo.Controllers
             {
                 return BadRequest();
             }
-            if (CurrentUser.Email==UserEmail)
+            if (CurrentUser.Email == UserEmail)
             {
                 CurrentUser.Password = _jwtAuthManager.GenerateTemporaryPasswordString();
                 await _emailSender.SendEmailAsync(UserEmail, "Reset Password - ReactApp", $"Your new temporary password: '{CurrentUser.Password}'");
