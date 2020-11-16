@@ -10,6 +10,7 @@ using Microsoft.IdentityModel.Tokens;
 using ReactWebBackend.Controllers;
 using ReactWebBackend.JwtAuth;
 using ReactWebBackend.Models;
+using ReactWebBackend.Models.AccountModels;
 using ReactWebBackend.Services;
 using ReactWebBackend.Services.EmailService;
 
@@ -134,7 +135,7 @@ namespace JwtAuthDemo.Controllers
         {
 
             var claims = new[]
-{
+            {
                 new Claim(ClaimTypes.Name,request.UserName),
                 new Claim(ClaimTypes.Email, request.UserEmail)
             };
@@ -155,10 +156,45 @@ namespace JwtAuthDemo.Controllers
             {
                 return BadRequest();
             }
-            var CurrentUser = _userService.GetUserByEmail(UserName, AcceptedEmail);
+            var CurrentUser = _userService.GetUserByEmail(AcceptedEmail);
             CurrentUser.IsEmailConfirmed = true;
             _userService.Edit(CurrentUser);
             return Ok();
+        }
+
+        [AllowAnonymous]
+        [HttpPost("SendPasswordResetEmail")]
+        public async Task<ActionResult> SendPasswordResetEmail([FromBody] PasswordResetRequest request)
+        {
+            var claims = new[]
+            {
+                new Claim(ClaimTypes.Email, request.Email)
+            };
+            var ConfirmToken = _jwtAuthManager.GeneratePasswordResetToken(claims, DateTime.Now);
+
+            string Url = $"{_configuration["appUrl"]}/api/account/passwordreset?UserEmail={request.Email}&token={ConfirmToken}";
+
+            await _emailSender.SendEmailAsync(request.Email, "Reset Password - ReactApp", "<h1>Hello from React Web</h1>" + $"<p> to reset your password: <a href='{Url}'>Click here!</a></p>");
+
+            return Ok();
+        }
+        [AllowAnonymous]
+        [HttpGet("PasswordReset")]
+        public ActionResult PasswordReset(string UserEmail, string token)
+        {
+            var CurrentUser = _userService.GetUserByEmail(UserEmail);
+            var AcceptedEmail = _jwtAuthManager.ConfirmPasswordResetToken(UserEmail, token);
+            if (AcceptedEmail == null)
+            {
+                return BadRequest();
+            }
+            if (CurrentUser.Email==UserEmail)
+            {
+                CurrentUser.Password = "zmienionehaslo:)";
+                _userService.Edit(CurrentUser);
+                return Ok();
+            }
+            return BadRequest();
         }
 
         [HttpPost("refresh-token")]

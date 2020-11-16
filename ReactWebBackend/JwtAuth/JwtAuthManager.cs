@@ -136,6 +136,31 @@ namespace ReactWebBackend.JwtAuth
             return new JwtSecurityTokenHandler().WriteToken(jwtToken);
         }
 
+        public string GeneratePasswordResetToken(Claim[] claims, DateTime now)
+        {
+            var shouldAddAudienceClaim = string.IsNullOrWhiteSpace(claims?.FirstOrDefault(x => x.Type == JwtRegisteredClaimNames.Aud)?.Value);
+            var jwtToken = new JwtSecurityToken(
+                _jwtTokenConfig.Issuer,
+                shouldAddAudienceClaim ? _jwtTokenConfig.Audience : string.Empty,
+                claims,
+                expires: now.AddMinutes(_jwtTokenConfig.AccessTokenExpiration),
+                signingCredentials: new SigningCredentials(new SymmetricSecurityKey(_secret), SecurityAlgorithms.HmacSha256Signature));
+            return new JwtSecurityTokenHandler().WriteToken(jwtToken);
+        }
+
+        public string ConfirmPasswordResetToken(string Email, string Token)
+        {
+            var (principal, jwtToken) = DecodeJwtToken(Token);
+
+            var result = jwtToken.Claims.Where(c => c.Type == ClaimTypes.Email).FirstOrDefault().Value;
+            if (jwtToken == null || !jwtToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256Signature))
+            {
+                throw new SecurityTokenException("Invalid token");
+            }
+            return result;
+        }
+
+
         public string ConfirmEmailToken(string UserName, string Token, DateTime Now)
         {
             var (principal, jwtToken) = DecodeJwtToken(Token);

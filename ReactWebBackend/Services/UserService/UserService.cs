@@ -76,9 +76,9 @@ namespace ReactWebBackend.Services
             _dbCollection.InsertOne(user);
             return user;
         }
-        public Users GetUserByEmail(string userName, string userEmail)
+        public Users GetUserByEmail(string userEmail)
         {
-            return _dbCollection.Find<Users>(user => user.UserName == userName && user.Email == userEmail).FirstOrDefault();
+            return _dbCollection.Find<Users>(user => user.Email == userEmail).FirstOrDefault();
         }
         public Users GetUserByPassword(string userName, string password)
         {

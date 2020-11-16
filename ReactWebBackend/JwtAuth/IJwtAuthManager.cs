@@ -17,6 +17,9 @@ namespace ReactWebBackend.JwtAuth
         void RemoveRefreshTokenByUserName(string userName);
         (ClaimsPrincipal, JwtSecurityToken) DecodeJwtToken(string token);
         string GenerateConfirmEmailToken(string username, Claim[] claims, DateTime now);
+
+        string GeneratePasswordResetToken(Claim[] claims, DateTime now);
         string ConfirmEmailToken(string UserName, string Token, DateTime Now);
+        string ConfirmPasswordResetToken(string Email, string Token);
     }
 }
