@@ -123,6 +123,13 @@ namespace ReactWebBackend.JwtAuth
             randomNumberGenerator.GetBytes(randomNumber);
             return Convert.ToBase64String(randomNumber);
         }
+        public string GenerateTemporaryPasswordString()
+        {
+            var randomNumber = new byte[16];
+            using var randomNumberGenerator = RandomNumberGenerator.Create();
+            randomNumberGenerator.GetBytes(randomNumber);
+            return Convert.ToBase64String(randomNumber);
+        }
 
         public string GenerateConfirmEmailToken(string username, Claim[] claims, DateTime now)
         {

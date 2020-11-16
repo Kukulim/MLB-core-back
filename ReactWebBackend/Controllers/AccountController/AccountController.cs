@@ -180,7 +180,7 @@ namespace JwtAuthDemo.Controllers
         }
         [AllowAnonymous]
         [HttpGet("PasswordReset")]
-        public ActionResult PasswordReset(string UserEmail, string token)
+        public async Task<ActionResult> PasswordReset(string UserEmail, string token)
         {
             var CurrentUser = _userService.GetUserByEmail(UserEmail);
             var AcceptedEmail = _jwtAuthManager.ConfirmPasswordResetToken(UserEmail, token);
@@ -190,7 +190,8 @@ namespace JwtAuthDemo.Controllers
             }
             if (CurrentUser.Email==UserEmail)
             {
-                CurrentUser.Password = "zmienionehaslo:)";
+                CurrentUser.Password = _jwtAuthManager.GenerateTemporaryPasswordString();
+                await _emailSender.SendEmailAsync(UserEmail, "Reset Password - ReactApp", $"Your new temporary password: '{CurrentUser.Password}'");
                 _userService.Edit(CurrentUser);
                 return Ok();
             }
