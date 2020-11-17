@@ -1,16 +1,13 @@
 ﻿using Microsoft.Extensions.Logging;
-using MongoDB.Bson;
 using MongoDB.Driver;
 using ReactWebBackend.DbContext;
-using ReactWebBackend.Models;
-using System;
+using ReactWebBackend.Models.UsersModels;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace ReactWebBackend.Services
 {
-        public class UserService : IUserService
+    public class UserService : IUserService
         {
             private readonly ILogger<UserService> _logger;
             private readonly IMongoBookDBContext _mongoContext;

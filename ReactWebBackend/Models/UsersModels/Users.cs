@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
-namespace ReactWebBackend.Models
+namespace ReactWebBackend.Models.UsersModels
 {
     public class Users
 
@@ -24,7 +24,6 @@ namespace ReactWebBackend.Models
         public string Email { get; set; }
 
         public bool IsEmailConfirmed { get; set; } = false;
-        public List<Book> Books { get; set; }
 
     }
 }

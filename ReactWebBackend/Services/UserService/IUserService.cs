@@ -1,8 +1,5 @@
-﻿using ReactWebBackend.Models;
-using System;
+﻿using ReactWebBackend.Models.UsersModels;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace ReactWebBackend.Services
 {
