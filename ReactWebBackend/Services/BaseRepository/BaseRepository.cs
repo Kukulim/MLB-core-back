@@ -57,7 +57,7 @@ namespace ReactWebBackend.Services.BaseRepository
         }
 
 
-        public virtual async Task<IEnumerable<TEntity>> GetAll(string userId)
+        public virtual async Task<IEnumerable<TEntity>> GetAllMy(string userId)
         {
 
             FilterDefinition<TEntity> filter = Builders<TEntity>.Filter.Eq("UserId", userId);

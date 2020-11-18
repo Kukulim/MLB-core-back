@@ -11,6 +11,6 @@ namespace ReactWebBackend.Services.BaseRepository
         void Update(TEntity obj);
         void Delete(string id);
         Task<TEntity> Get(string id);
-        Task<IEnumerable<TEntity>> GetAll(string Id);
+        Task<IEnumerable<TEntity>> GetAllMy(string Id);
     }
 }

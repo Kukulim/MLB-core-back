@@ -14,5 +14,10 @@ namespace ReactWebBackend.Services.BookRepository
         public BookRepository(IMongoBookDBContext context) : base(context)
         {
         }
+
+        public async Task<IEnumerable<Book>> GetAll()
+        {
+            return await _dbCollection.FindAsync(_ => true).Result.ToListAsync();
+        }
     }
 }

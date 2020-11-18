@@ -19,12 +19,18 @@ namespace ReactWebBackend.Controllers
         {
             this.bookRepository = bookRepository;
         }
-
+        [AllowAnonymous]
         [HttpGet]
         public ActionResult<IEnumerable<Book>> GetAll()
         {
+            var all = bookRepository.GetAll();
+            return Ok(all.Result);
+        }
+        [HttpGet("GetAllMy")]
+        public ActionResult<IEnumerable<Book>> GetAllMy()
+        {
             var userId = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var all = bookRepository.GetAll(userId);
+            var all = bookRepository.GetAllMy(userId);
             return Ok(all.Result);
         }
 
