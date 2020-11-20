@@ -23,5 +23,6 @@ namespace ReactWebBackend.Models
         public string Author { get; set; }
 
         public string UserId { get; set; }
+        public string ImageUrl { get; set; }
     }
 }
