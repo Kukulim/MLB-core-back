@@ -25,5 +25,8 @@ namespace ReactWebBackend.Models.UsersModels
 
         public bool IsEmailConfirmed { get; set; } = false;
 
+        public List<Orders> Orders { get; set; }
+        public ShippingAddress ShippingAddress { get; set; } = new ShippingAddress();
+
     }
 }

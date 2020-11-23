@@ -38,7 +38,7 @@ namespace ReactWebBackend.Services
                     return false;
                 }
 
-            var user = _dbCollection.Find<Users>(user => user.UserName == userName && user.Password== password).FirstOrDefault();
+            var user = _dbCollection.Find<Users>(user => user.UserName == userName && user.Password == password).FirstOrDefault();
 
             if (user != null)
             {
@@ -88,8 +88,12 @@ namespace ReactWebBackend.Services
         }
         public Users Edit(Users user)
         {
-            var filter = Builders<Users>.Filter.Eq(doc => doc.Id, user.Id);
-            _dbCollection.FindOneAndReplace(filter, user);
+            var builder = Builders<Users>.Filter;
+            var filter = builder.Eq(x => x.Email, user.Email);
+            var userToEdit = _dbCollection.Find<Users>(u => u.Email == user.Email).FirstOrDefault();
+
+            userToEdit.ShippingAddress = user.ShippingAddress;
+            _dbCollection.FindOneAndReplace(filter, userToEdit);
             return user;
         }
         public void Delete(Users user)

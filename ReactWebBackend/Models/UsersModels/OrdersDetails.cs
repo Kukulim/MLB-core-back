@@ -12,7 +12,6 @@ namespace ReactWebBackend.Models.UsersModels
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
         public string Id { get; set; }
-        public string OrderId { get; set; }
         public int ProductId { get; set; }
         public decimal UnitPrice { get; set; }
         public int Quantity { get; set; }
