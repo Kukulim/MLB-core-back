@@ -13,6 +13,7 @@ using ReactWebBackend.Services.EmailService;
 using System;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using BC = BCrypt.Net.BCrypt;
 
 namespace JwtAuthDemo.Controllers
 {
@@ -50,7 +51,7 @@ namespace JwtAuthDemo.Controllers
                 var newUser = new Users
                 {
                     UserName = request.UserName,
-                    Password = request.Password,
+                    Password = BC.HashPassword(request.Password),
                     Email = request.Email
                 };
                 _userService.Create(newUser);
@@ -72,28 +73,25 @@ namespace JwtAuthDemo.Controllers
             {
                 return BadRequest();
             }
+            var CurrentUser = _userService.GetUserByEmail(request.Email);
 
-            if (!_userService.IsValidUserCredentials(request.UserName, request.Password))
+            if (CurrentUser==null || !BC.Verify(request.Password, CurrentUser.Password))
             {
                 return Unauthorized();
             }
 
-            var role = _userService.GetUserRole(request.UserName);
-            var CurrentUser = _userService.GetUserByPassword(request.UserName, request.Password);
+
             var claims = new[]
             {
-                new Claim(ClaimTypes.Name,request.UserName),
-                new Claim(ClaimTypes.NameIdentifier, CurrentUser.Id),
-                new Claim(ClaimTypes.Role, role),
+                new Claim(ClaimTypes.Name,CurrentUser.UserName),
                 new Claim(ClaimTypes.Email, CurrentUser.Email)
             };
 
-            var jwtResult = _jwtAuthManager.GenerateTokens(request.UserName, claims, DateTime.Now);
-            _logger.LogInformation($"User [{request.UserName}] logged in the system.");
+            var jwtResult = _jwtAuthManager.GenerateTokens(CurrentUser.UserName, claims, DateTime.Now);
+            _logger.LogInformation($"User [{CurrentUser.UserName}] logged in the system.");
             return Ok(new LoginResult
             {
-                UserName = request.UserName,
-                Role = role,
+                UserName = CurrentUser.UserName,
                 AccessToken = jwtResult.AccessToken,
                 RefreshToken = jwtResult.RefreshToken.TokenString,
                 Email = CurrentUser.Email,

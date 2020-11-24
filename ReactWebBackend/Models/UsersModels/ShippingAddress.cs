@@ -1,7 +1,4 @@
-﻿using MongoDB.Bson;
-using MongoDB.Bson.Serialization.Attributes;
-
-namespace ReactWebBackend.Models.UsersModels
+﻿namespace ReactWebBackend.Models.UsersModels
 {
     public class ShippingAddress
     {
