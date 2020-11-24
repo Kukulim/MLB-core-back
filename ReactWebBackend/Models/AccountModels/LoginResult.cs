@@ -1,4 +1,6 @@
-﻿using System.Text.Json.Serialization;
+﻿using ReactWebBackend.Models.UsersModels;
+using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace JwtAuthDemo.Controllers
 {
@@ -15,5 +17,7 @@ namespace JwtAuthDemo.Controllers
         public string RefreshToken { get; set; }
         public string Email { get; set; }
         public bool IsEmailConfirmed { get; set; }
+        public ShippingAddress ShippingAddress { get; set; }
+        public List<Orders> Orders{ get; set; }
     }
 }

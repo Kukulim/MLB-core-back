@@ -97,7 +97,9 @@ namespace JwtAuthDemo.Controllers
                 AccessToken = jwtResult.AccessToken,
                 RefreshToken = jwtResult.RefreshToken.TokenString,
                 Email = CurrentUser.Email,
-                IsEmailConfirmed = CurrentUser.IsEmailConfirmed
+                IsEmailConfirmed = CurrentUser.IsEmailConfirmed,
+                ShippingAddress = CurrentUser.ShippingAddress,
+                Orders = CurrentUser.Orders                
             });
         }
 
