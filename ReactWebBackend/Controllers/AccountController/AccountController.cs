@@ -91,6 +91,7 @@ namespace JwtAuthDemo.Controllers
             _logger.LogInformation($"User [{CurrentUser.UserName}] logged in the system.");
             return Ok(new LoginResult
             {
+                UserId = CurrentUser.Id,
                 UserName = CurrentUser.UserName,
                 AccessToken = jwtResult.AccessToken,
                 RefreshToken = jwtResult.RefreshToken.TokenString,

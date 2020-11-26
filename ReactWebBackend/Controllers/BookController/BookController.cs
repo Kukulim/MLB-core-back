@@ -44,11 +44,9 @@ namespace ReactWebBackend.Controllers
             return Ok(product);
         }
 
-        [HttpPost]
+        [HttpPost("CreateAuction")]
         public async Task<ActionResult> Post(Book book)
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            book.UserId = userId;
             await bookRepository.Create(book);
             return Ok(book);
         }
@@ -60,7 +58,7 @@ namespace ReactWebBackend.Controllers
             return Ok();
         }
 
-        [HttpPost, DisableRequestSizeLimit]
+        [HttpPost("UploadImage"), DisableRequestSizeLimit]
         public IActionResult UploadImage()
         {
             try
