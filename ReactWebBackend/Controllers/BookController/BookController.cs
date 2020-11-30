@@ -1,13 +1,16 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using ReactWebBackend.Models;
 using ReactWebBackend.Services.BookRepository;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using System.Xml;
 
 namespace ReactWebBackend.Controllers
 {
@@ -37,11 +40,30 @@ namespace ReactWebBackend.Controllers
             return Ok(all.Result);
         }
 
+        [AllowAnonymous]
         [HttpGet("{id}")]
         public async Task<ActionResult<Book>> Get(string id)
         {
             var product = await bookRepository.Get(id);
             return Ok(product);
+        }
+
+        [AllowAnonymous]
+        [HttpGet("search/{name}")]
+        public async Task<ActionResult> Search(string name)
+        {
+            var Result = String.Empty;
+            using (var httpClient = new HttpClient())
+            {
+                using (var response = await httpClient.GetAsync("https://www.goodreads.com/search.xml?key=Qlw5SGEgA7wGSi52Sfg&q="+name))
+                {
+                    XmlDocument doc = new XmlDocument();
+                    string apiResponse = await response.Content.ReadAsStringAsync();
+                    doc.LoadXml(apiResponse);
+                    Result = JsonConvert.SerializeXmlNode(doc);
+                }
+            }
+            return Ok(Result);
         }
 
         [HttpPost("CreateAuction")]
