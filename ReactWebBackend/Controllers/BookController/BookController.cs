@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using ReactWebBackend.Models;
 using ReactWebBackend.Services.BookRepository;
@@ -20,10 +21,12 @@ namespace ReactWebBackend.Controllers
     public class BookController : ControllerBase
     {
         private readonly IBookRepository bookRepository;
+        private readonly IConfiguration configuration;
 
-        public BookController(IBookRepository bookRepository)
+        public BookController(IBookRepository bookRepository, IConfiguration configuration)
         {
             this.bookRepository = bookRepository;
+            this.configuration = configuration;
         }
         [AllowAnonymous]
         [HttpGet]
@@ -55,7 +58,7 @@ namespace ReactWebBackend.Controllers
             var Result = String.Empty;
             using (var httpClient = new HttpClient())
             {
-                using (var response = await httpClient.GetAsync("https://www.goodreads.com/search.xml?key=Qlw5SGEgA7wGSi52Sfg&q="+name))
+                using (var response = await httpClient.GetAsync(configuration["BookAPI:url"] + name))
                 {
                     XmlDocument doc = new XmlDocument();
                     string apiResponse = await response.Content.ReadAsStringAsync();
