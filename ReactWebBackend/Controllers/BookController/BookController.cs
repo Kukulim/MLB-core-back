@@ -69,6 +69,24 @@ namespace ReactWebBackend.Controllers
             return Ok(Result);
         }
 
+        [AllowAnonymous]
+        [HttpGet("detailssearch/{name}&{author}")]
+        public async Task<ActionResult> DetailsSearch(string name, string author)
+        {
+            var Result = String.Empty;
+            using (var httpClient = new HttpClient())
+            {
+                using (var response = await httpClient.GetAsync(configuration["BookAPI:baseurl"]+ "/book/title.xml?author=" + author+ "&key="+ configuration["BookAPI:key"]+ "&title="+name))
+                {
+                    XmlDocument doc = new XmlDocument();
+                    string apiResponse = await response.Content.ReadAsStringAsync();
+                    doc.LoadXml(apiResponse);
+                    Result = JsonConvert.SerializeXmlNode(doc);
+                }
+            }
+            return Ok(Result);
+        }
+
         [HttpPost("CreateAuction")]
         public async Task<ActionResult> Post(Book book)
         {
